@@ -323,3 +323,62 @@ FROM FamilyMembers fm
 GROUP BY fm.member_id
 ```
 </details>
+
+
+<details>
+<summary>Задание 18</summary>
+
+**Описание задачи:**
+Выведите имя самого старшего человека. Если таких несколько, то выведите их всех.
+**Решение:**
+
+```sql
+SELECT member_name
+FROM FamilyMembers
+WHERE birthday = (SELECT MIN(birthday) FROM FamilyMembers);
+```
+
+```sql
+SELECT fm.member_name
+FROM FamilyMembers fm
+JOIN (
+    SELECT MIN(birthday) as min_birthday
+    FROM FamilyMembers
+) fm2 ON fm.birthday = fm2.min_birthday;
+```
+</details>
+
+
+<details>
+<summary>Задание 19</summary>
+
+**Описание задачи:**
+Определить, кто из членов семьи покупал картошку (potato)
+**Решение:**
+```sql
+SELECT DISTINCT 
+    fm.status
+FROM FamilyMembers fm
+JOIN Payments p ON p.family_member = fm.member_id
+JOIN Goods g ON g.good_id = p.good and g.good_name = 'potato'
+```
+</details>
+
+<details>
+<summary>Задание 20</summary>
+
+**Описание задачи:**
+Сколько и кто из семьи потратил на развлечения (entertainment). Вывести статус в семье, имя, сумму
+**Решение:**
+```sql
+SELECT
+    fm.status,
+    fm.member_name,
+    SUM(p.unit_price * p.amount) costs
+FROM FamilyMembers fm
+JOIN Payments p ON p.family_member = fm.member_id
+JOIN Goods g ON g.good_id = p.good
+JOIN GoodTypes gt ON gt.good_type_id = g.type AND gt.good_type_name = 'entertainment'
+GROUP BY fm.member_id
+```
+</details>
