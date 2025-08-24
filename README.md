@@ -224,21 +224,45 @@ GROUP BY t.id
 <summary>Задание 13</summary>
 
 **Описание задачи:**
-
+Вывести имена людей, у которых есть полный тёзка среди пассажиров
 **Решение:**
 ```sql
-
+SELECT DISTINCT 
+    p.name
+FROM Passenger p
+JOIN (
+    SELECT
+        p2.id,
+        p2.name
+    FROM Passenger p2
+) p2 ON p.id != p2.id and p.name = p2.name
 ```
+```sql
+SELECT DISTINCT 
+    p.name
+FROM Passenger p
+WHERE EXISTS(
+    SELECT
+        1
+    FROM Passenger p2
+    WHERE p.name = p2.name and p.id != p2.id
+)
+```
+
 </details>
 
 <details>
 <summary>Задание 14</summary>
 
 **Описание задачи:**
-
+В какие города летал Bruce Willis
 **Решение:**
 ```sql
-
+SELECT DISTINCT
+    t.town_to
+FROM Trip t
+JOIN Pass_in_trip pt ON t.id = pt.trip
+JOIN Passenger p on pt.passenger = p.id and p.name = 'Bruce Willis'
 ```
 </details>
 
@@ -247,9 +271,55 @@ GROUP BY t.id
 <summary>Задание 15</summary>
 
 **Описание задачи:**
-
+Выведите идентификатор пассажира Стив Мартин (Steve Martin) и дату и время его прилёта в Лондон (London)
 **Решение:**
 ```sql
+SELECT p.id,
+	t.time_in
+FROM Passenger p
+	JOIN Pass_in_trip pt on pt.passenger = p.id
+	JOIN Trip t on t.id = pt.trip
+WHERE p.name = 'Steve Martin'
+	and t.town_to = 'London'
+```
+</details>
 
+
+
+<details>
+<summary>Задание 16</summary>
+
+**Описание задачи:**
+Вывести отсортированный по количеству перелетов (по убыванию) и имени (по возрастанию) список пассажиров, совершивших хотя бы 1 полет.
+**Решение:**
+```sql
+SELECT p.name as name,
+	COUNT(p.id) as count
+FROM Passenger p
+	JOIN Pass_in_trip pt on pt.passenger = p.id
+GROUP BY p.id
+HAVING COUNT(p.id) > 0
+ORDER BY count DESC, name ASC
+```
+</details>
+
+
+<details>
+<summary>Задание 17</summary>
+
+**Описание задачи:**
+Определить, сколько потратил в 2005 году каждый из членов семьи. В результирующей выборке не выводите тех членов семьи, которые ничего не потратили.
+**Решение:**
+```sql
+SELECT fm.member_name,
+	fm.status,
+	SUM(p.unit_price * p.amount) as costs
+FROM FamilyMembers fm
+	JOIN Payments p ON fm.member_id = p.family_member
+	and EXTRACT(
+		year
+		from p.date
+	) = 2005
+GROUP BY fm.member_id
 ```
 </details>
