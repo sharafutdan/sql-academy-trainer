@@ -382,3 +382,32 @@ JOIN GoodTypes gt ON gt.good_type_id = g.type AND gt.good_type_name = 'entertain
 GROUP BY fm.member_id
 ```
 </details>
+
+<details>
+<summary>Задание 26</summary>
+
+**Описание задачи:**
+Определить группы товаров, которые не приобретались в 2005 году
+**Решение:**
+```sql
+SELECT gt.good_type_name
+FROM GoodTypes gt
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Goods g
+             JOIN Payments p ON p.good = g.good_id
+    WHERE g.type = gt.good_type_id
+      AND p.date BETWEEN '2005-01-01' AND '2005-12-31'
+)
+```
+```sql
+SELECT gt.good_type_name
+FROM GoodTypes gt
+WHERE gt.good_type_id NOT IN (
+		SELECT g.type
+		FROM Goods g
+			JOIN Payments p on p.good = g.good_id
+			and p.date BETWEEN '2005-01-01' and '2005-12-31'
+	)
+```
+</details>
