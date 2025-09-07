@@ -383,6 +383,116 @@ GROUP BY fm.member_id
 ```
 </details>
 
+
+<details>
+<summary>Задание 21</summary>
+
+**Описание задачи:**
+Определить товары, которые покупали более 1 раза
+
+**Решение:**
+```sql
+SELECT g.good_name
+FROM Goods g
+         JOIN Payments p ON p.good = g.good_id
+GROUP BY g.good_id
+HAVING COUNT(p.payment_id) > 1
+```
+</details>
+
+<details>
+<summary>Задание 22</summary>
+
+**Описание задачи:**
+Найти имена всех матерей (mother
+
+**Решение:**
+```sql
+SELECT fm.member_name
+FROM FamilyMembers fm
+WHERE fm.status = 'mother'
+```
+</details>
+
+<details>
+<summary>Задание 23</summary>
+
+**Описание задачи:**
+Найдите самый дорогой деликатес (delicacies) и выведите его цену
+
+**Решение:**
+```sql
+SELECT g.good_name,
+       p.unit_price
+FROM Goods g
+         JOIN Payments p ON g.good_id = p.good
+         JOIN GoodTypes gt ON gt.good_type_id = g.type
+WHERE gt.good_type_name = 'delicacies'
+ORDER BY p.unit_price DESC
+    LIMIT 1;
+```
+
+```sql
+SELECT g.good_name,
+	p.unit_price
+FROM Goods g
+	JOIN GoodTypes gt ON g.type = gt.good_type_id
+	JOIN Payments p ON g.good_id = p.good
+	JOIN (
+		SELECT MAX(p2.unit_price) as max_price
+		FROM Payments p2
+			JOIN Goods g2 ON p2.good = g2.good_id
+			JOIN GoodTypes gt2 ON g2.type = gt2.good_type_id
+		WHERE gt2.good_type_name = 'delicacies'
+	) mp ON p.unit_price = mp.max_price
+```
+</details>
+
+
+<details>
+<summary>Задание 24</summary>
+
+**Описание задачи:**
+Определить кто и сколько потратил в июне 2005
+**Решение:**
+```sql
+SELECT fm.member_name,
+       SUM(p.unit_price * p.amount) as costs
+FROM FamilyMembers fm
+         JOIN Payments p ON p.family_member = fm.member_id
+WHERE YEAR(p.date) = 2005
+  and MONTH(p.date) = 6
+GROUP BY fm.member_name
+```
+</details>
+
+<details>
+<summary>Задание 25</summary>
+
+**Описание задачи:**
+Определить, какие товары не покупались в 2005 году
+**Решение:**
+```sql
+SELECT
+    g.good_name
+FROM Goods g
+WHERE NOT EXISTS(
+    SELECT 
+        1
+    FROM Payments p
+    WHERE p.good = g.good_id
+      AND EXTRACT(YEAR FROM p.date) = 2005
+)
+```
+```sql
+SELECT DISTINCT g.good_name
+FROM Goods g
+         LEFT JOIN Payments p ON g.good_id = p.good
+    AND EXTRACT(YEAR FROM p.date) = 2005
+WHERE p.payment_id IS NULL;
+```
+</details>
+
 <details>
 <summary>Задание 26</summary>
 
@@ -409,5 +519,201 @@ WHERE gt.good_type_id NOT IN (
 			JOIN Payments p on p.good = g.good_id
 			and p.date BETWEEN '2005-01-01' and '2005-12-31'
 	)
+```
+</details>
+
+<details>
+<summary>Задание 27</summary>
+
+**Описание задачи:**
+Узнайте, сколько было потрачено на каждую из групп товаров в 2005 году. Выведите название группы и потраченную на неё сумму. Если потраченная сумма равна нулю, т.е. товары из этой группы не покупались в 2005 году, то не выводите её.
+**Решение:**
+```sql
+SELECT gt.good_type_name,
+       SUM(p.amount * p.unit_price) costs
+FROM GoodTypes gt
+         JOIN Goods g ON g.type = gt.good_type_id
+         JOIN Payments p ON p.good = g.good_id
+    AND EXTRACT(
+                YEAR
+                FROM p.date
+        ) = 2005
+GROUP BY gt.good_type_id
+```
+</details>
+
+<details>
+<summary>Задание 29</summary>
+
+**Описание задачи:**
+Сколько рейсов совершили авиакомпании из Ростова (Rostov) в Москву (Moscow) ?
+**Решение:**
+```sql
+SELECT DISTINCT
+    p.name
+FROM Passenger p
+         JOIN Pass_in_trip pt ON pt.passenger = p.id
+         JOIN Trip t ON t.id = pt.trip AND t.plane = 'TU-134' and t.town_to='Moscow'
+```
+</details>
+
+<details>
+<summary>Задание 30</summary>
+
+**Описание задачи:**
+Выведите нагруженность (число пассажиров) каждого рейса (trip). Результат вывести в отсортированном виде по убыванию нагруженности.
+**Решение:**
+```sql
+SELECT pt.trip trip,
+       COUNT(pt.passenger) count
+FROM Pass_in_trip pt
+GROUP BY pt.trip
+ORDER BY COUNT(pt.passenger) DESC
+```
+</details>
+
+<details>
+<summary>Задание 31</summary>
+
+**Описание задачи:**
+Вывести всех членов семьи с фамилией Quincey.
+**Решение:**
+```sql
+SELECT *
+FROM FamilyMembers fm
+WHERE fm.member_name LIKE '%Quincey%'
+```
+</details>
+
+<details>
+<summary>Задание 32</summary>
+
+**Описание задачи:**
+Вывести средний возраст людей (в годах), хранящихся в базе данных. Результат округлите до целого в меньшую сторону.
+**Решение:**
+```sql
+SELECT FLOOR(AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, birthday)))) AS age
+FROM FamilyMembers;
+```
+</details>
+
+<details>
+<summary>Задание 33</summary>
+
+**Описание задачи:**
+Найдите среднюю цену икры на основе данных, хранящихся в таблице Payments.
+В базе данных хранятся данные о покупках красной (red caviar) и черной икры (black caviar).
+В ответе должна быть одна строка со средней ценой всей купленной когда-либо икры.
+**Решение:**
+```sql
+SELECT
+    AVG(p.unit_price) as cost
+FROM Payments p
+JOIN Goods g ON g.good_id = p.good AND g.good_name LIKE '%caviar%'
+
+```
+</details>
+
+<details>
+<summary>Задание 33</summary>
+
+**Описание задачи:**
+Сколько всего 10-ых классов
+**Решение:**
+```sql
+SELECT
+    COUNT(c.id)
+FROM Class c
+WHERE c.name LIKE '10%'
+
+```
+</details>
+
+<details>
+<summary>Задание 35</summary>
+
+**Описание задачи:**
+Сколько различных кабинетов школы использовались 2 сентября 2019 года для проведения занятий?
+**Решение:**
+```sql
+SELECT
+    COUNT(DISTINCT s.classroom)
+FROM Schedule s
+WHERE s.date = '2019-09-02'
+
+```
+</details>
+
+<details>
+<summary>Задание 36</summary>
+
+**Описание задачи:**
+Выведите информацию об обучающихся живущих на улице Пушкина (ul. Pushkina)?
+**Решение:**
+```sql
+SELECT
+    *
+FROM Student s
+WHERE s.address like '%ul. Pushkina%'
+```
+</details>
+
+<details>
+<summary>Задание 37</summary>
+
+**Описание задачи:**
+Сколько лет самому молодому обучающемуся ?
+**Решение:**
+```sql
+SELECT
+    MIN(EXTRACT(YEAR FROM AGE(CURRENT_DATE, s.birthday))) AS year
+FROM Student s;
+```
+</details>
+
+<details>
+<summary>Задание 38</summary>
+
+**Описание задачи:**
+Сколько учениц с именем Анна (Anna) учится в школе?
+**Решение:**
+```sql
+SELECT
+    COUNT(s.id)
+FROM Student s
+WHERE s.first_name LIKE '%Anna%'
+```
+</details>
+
+<details>
+<summary>Задание 39</summary>
+
+**Описание задачи:**
+Сколько обучающихся в 10 B классе ?
+**Решение:**
+```sql
+SELECT
+    COUNT(s.id) count
+FROM
+    Student s
+    JOIN Student_in_class sic on sic.student = s.id
+    JOIN Class c on c.id = sic.class
+    and c.name LIKE '%10 B%'
+```
+</details>
+
+<details>
+<summary>Задание 40</summary>
+
+**Описание задачи:**
+Сколько обучающихся в 10 B классе ?
+**Решение:**
+```sql
+SELECT
+    sub.name subjects
+FROM Subject sub
+         JOIN Schedule sch on sch.subject = sub.id
+         JOIN Teacher t on t.id = sch.teacher
+WHERE t.last_name LIKE '%Romashkin%' and t.first_name LIKE 'P%' and t.middle_name LIKE 'P%'
 ```
 </details>
