@@ -95,7 +95,7 @@ WHERE t.plane = 'TU-134'
 **Решение:**
 
 ```sql
-SELECT DISTINCT 
+SELECT DISTINCT
     c.name
 FROM Company c
 JOIN Trip t on t.company = c.id and t.plane LIKE '%Boeing%'
@@ -135,7 +135,7 @@ town_to
 flight_time)
 **Решение:**
 ```sql
-SELECT DISTINCT 
+SELECT DISTINCT
     t.town_to,
 	timediff(t.time_in, t.time_out) as flight_time
 FROM Trip t
@@ -187,8 +187,8 @@ WHERE t.time_out BETWEEN '1900-01-01 10:00' AND '1900-01-01 14:00'
 **Решение:**
 
 ```sql
-SELECT 
-    p.name 
+SELECT
+    p.name
 FROM Passenger p
 WHERE LENGTH(name) = (SELECT MAX(LENGTH(name)) FROM Passenger);
 ```
@@ -227,7 +227,7 @@ GROUP BY t.id
 Вывести имена людей, у которых есть полный тёзка среди пассажиров
 **Решение:**
 ```sql
-SELECT DISTINCT 
+SELECT DISTINCT
     p.name
 FROM Passenger p
 JOIN (
@@ -238,7 +238,7 @@ JOIN (
 ) p2 ON p.id != p2.id and p.name = p2.name
 ```
 ```sql
-SELECT DISTINCT 
+SELECT DISTINCT
     p.name
 FROM Passenger p
 WHERE EXISTS(
@@ -356,7 +356,7 @@ JOIN (
 Определить, кто из членов семьи покупал картошку (potato)
 **Решение:**
 ```sql
-SELECT DISTINCT 
+SELECT DISTINCT
     fm.status
 FROM FamilyMembers fm
 JOIN Payments p ON p.family_member = fm.member_id
@@ -477,7 +477,7 @@ SELECT
     g.good_name
 FROM Goods g
 WHERE NOT EXISTS(
-    SELECT 
+    SELECT
         1
     FROM Payments p
     WHERE p.good = g.good_id
@@ -717,4 +717,135 @@ FROM Subject sub
          JOIN Teacher t on t.id = sch.teacher
 WHERE t.last_name LIKE '%Romashkin%' and t.first_name LIKE 'P%' and t.middle_name LIKE 'P%'
 ```
+</details>
+
+<details>
+<summary>Задание 42</summary>
+
+**Описание задачи:**
+Время, проведённое в школе
+Сколько времени обучающийся будет находиться в школе, учась со 2-го по 4-ый уч. предмет?
+Используйте конструкцию "as time" для указания разницы во времени. Это необходимо для корректной проверки.
+Результат должен быть в формате HH:MM:SS
+**Решение:**
+```sql
+SELECT
+  max(end_pair) - min(start_pair) time
+FROM
+  (
+    SELECT
+      DISTINCT ON (s.number_pair) s.number_pair,
+      t.start_pair,
+      t.end_pair
+    FROM Schedule s
+    JOIN Timepair t ON t.id = s.number_pair  AND t.id IN (2, 4)
+    ORDER BY
+      s.number_pair
+  )
+
+```
+</details>
+
+
+<details>
+<summary>Задание 43</summary>
+
+**Описание задачи:**
+Преподаватели физкультуры
+Выведите фамилии преподавателей, которые ведут физическую культуру (Physical Culture). Отсортируйте преподавателей по фамилии в алфавитном порядке.
+Поля в результирующей таблице:
+last_name
+**Решение:**
+```sql
+select t.last_name
+from Teacher t
+where exists(
+    select 1
+    from Schedule s
+    join Subject sub on sub.id = s.subject
+    where sub.name = 'Physical Culture'
+    and t.id = s.teacher
+)
+order by t.last_name
+```
+</details>
+
+
+
+<details>
+<summary>Задание 44</summary>
+
+**Описание задачи:**
+Максимальный возраст в 10 классах
+Найдите максимальный возраст (количество лет) среди обучающихся 10 классов на сегодняшний день. Для получения текущих даты и времени используйте функцию NOW().
+Используйте конструкцию "as max_year" для указания максимального возраста в годах. Это необходимо для корректной проверки.
+Поля в результирующей таблице:
+max_year
+**Решение:**
+```sql
+SELECT EXTRACT(
+		YEAR
+		FROM AGE(NOW()::date, MIN(s.birthday::date))
+	) AS max_year
+FROM Student s
+	JOIN Student_in_class sic ON sic.student = s.id
+	JOIN Class c ON c.id = sic.class
+	AND c.name LIKE '%10%'
+```
+
+```sql
+SELECT EXTRACT(
+		year
+		FROM age(NOW(), s.birthday)
+	) max_year
+FROM Student s
+	JOIN (
+		SELECT c.name,
+			sic.student
+		FROM Class c
+			JOIN Student_in_class sic ON sic.class = c.id
+			AND c.name LIKE '%10%'
+	) ss ON s.id = ss.student
+ORDER BY s.birthday
+LIMIT 1
+```
+</details>
+
+<details>
+<summary>Задание 46</summary>
+
+**Описание задачи:**
+Классы преподавателя Krauze
+В каких классах введет занятия преподаватель "Krauze" ?
+Поля в результирующей таблице:
+name
+**Решение:**
+```sql
+SELECT DISTINCT
+    c.name
+FROM Schedule s
+JOIN Class c ON c.id = s.class
+JOIN Teacher t ON s.teacher = t.id and t.last_name = 'Krauze'
+```
+</details>
+
+
+<details>
+<summary>Задание 48</summary>
+
+**Описание задачи:**
+Заполненность классов
+Выведите заполненность классов в порядке убывания
+Используйте конструкцию "as count" для агрегатной функции подсчета числа учащихся в классах. Это необходимо для корректной проверки.
+**Решение:**
+```sql
+select
+    c.name,
+    count(*) as count
+from Class c
+join Student_in_class sic on sic.class = c.id
+group by c.id
+order by count desc
+```
+
 </details>
