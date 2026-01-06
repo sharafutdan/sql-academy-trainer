@@ -7,9 +7,11 @@
 Вывести имена всех людей, которые есть в базе данных авиакомпании.
 
 **Решение:**
+
 ```sql
 SELECT name FROM Passenger;
 ```
+
 </details>
 
 <details>
@@ -21,12 +23,13 @@ SELECT name FROM Passenger;
 name
 
 **Решение:**
+
 ```sql
 SELECT c.name
 FROM Company c
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 3 - Рейсы из Москвы</summary>
@@ -37,11 +40,13 @@ FROM Company c
 все
 
 **Решение:**
+
 ```sql
 SELECT *
 FROM Trip t
 WHERE t.town_from = 'Moscow'
 ```
+
 </details>
 
 <details>
@@ -51,13 +56,14 @@ WHERE t.town_from = 'Moscow'
 Вывести имена людей, которые заканчиваются на "man"
 
 **Решение:**
+
 ```sql
 SELECT *
 FROM Trip t
 WHERE t.town_from = 'Moscow'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 5 - Количество рейсов на TU-134</summary>
@@ -67,14 +73,16 @@ WHERE t.town_from = 'Moscow'
 Используйте конструкцию "as count" для агрегатной функции подсчета количества рейсов. Это необходимо для корректной проверки.
 Поля в результирующей таблице:
 count
+
 **Решение:**
+
 ```sql
 SELECT COUNT(t.id) as count
 FROM Trip t
 WHERE t.plane = 'TU-134'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 6 - Компании, летавшие на Boeing</summary>
@@ -98,8 +106,8 @@ FROM Company c
 JOIN Trip t on c.id = t.company
 WHERE t.plane LIKE '%Boeing%'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 7 - Самолеты, летящие в Москву</summary>
@@ -110,14 +118,15 @@ WHERE t.plane LIKE '%Boeing%'
 plane
 
 **Решение:**
+
 ```sql
 SELECT DISTINCT
     t.plane
 FROM Trip t
 WHERE t.town_to='Moscow'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 8 - Полёты из Парижа</summary>
@@ -128,6 +137,7 @@ town_to
 flight_time)
 
 **Решение:**
+
 ```sql
 SELECT DISTINCT
     t.town_to,
@@ -135,8 +145,8 @@ SELECT DISTINCT
 FROM Trip t
 WHERE t.town_from = 'Paris'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 9 - Компании с рейсами из Владивостока</summary>
@@ -145,6 +155,7 @@ WHERE t.town_from = 'Paris'
 Какие компании организуют перелеты из Владивостока (Vladivostok)?
 
 **Решение:**
+
 ```sql
 SELECT DISTINCT c.name
 FROM Company c
@@ -161,6 +172,7 @@ WHERE c.id in (
 		WHERE t.town_from = 'Vladivostok'
 	)
 ```
+
 </details>
 
 <details>
@@ -170,11 +182,13 @@ WHERE c.id in (
 Вывести вылеты, совершенные с 10 ч. по 14 ч. 1 января 1900 г.
 
 **Решение:**
+
 ```sql
 SELECT *
 FROM Trip t
 WHERE t.time_out BETWEEN '1900-01-01 10:00' AND '1900-01-01 14:00'
 ```
+
 </details>
 
 <details>
@@ -200,6 +214,7 @@ FROM Passenger p
 		FROM Passenger p2
 	) p2 ON LENGTH(p.name) = p2.name_max_len
 ```
+
 </details>
 
 <details>
@@ -209,6 +224,7 @@ FROM Passenger p
 Выведите идентификаторы всех рейсов и количество пассажиров на них. Обратите внимание, что на каких-то рейсах пассажиров может не быть. В этом случае выведите число "0".
 
 **Решение:**
+
 ```sql
 SELECT t.id,
 	COUNT(pt.passenger)
@@ -216,8 +232,8 @@ FROM Trip t
 LEFT JOIN Pass_in_trip pt ON pt.trip = t.id
 GROUP BY t.id
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 13 - Полные тёзки</summary>
@@ -226,6 +242,7 @@ GROUP BY t.id
 Вывести имена людей, у которых есть полный тёзка среди пассажиров
 
 **Решение:**
+
 ```sql
 SELECT DISTINCT
     p.name
@@ -237,6 +254,7 @@ JOIN (
     FROM Passenger p2
 ) p2 ON p.id != p2.id and p.name = p2.name
 ```
+
 ```sql
 SELECT DISTINCT
     p.name
@@ -258,6 +276,7 @@ WHERE EXISTS(
 В какие города летал Bruce Willis
 
 **Решение:**
+
 ```sql
 SELECT DISTINCT
     t.town_to
@@ -265,6 +284,7 @@ FROM Trip t
 JOIN Pass_in_trip pt ON t.id = pt.trip
 JOIN Passenger p on pt.passenger = p.id and p.name = 'Bruce Willis'
 ```
+
 </details>
 
 <details>
@@ -274,6 +294,7 @@ JOIN Passenger p on pt.passenger = p.id and p.name = 'Bruce Willis'
 Выведите идентификатор пассажира Стив Мартин (Steve Martin) и дату и время его прилёта в Лондон (London)
 
 **Решение:**
+
 ```sql
 SELECT p.id,
 	t.time_in
@@ -283,6 +304,7 @@ FROM Passenger p
 WHERE p.name = 'Steve Martin'
 	and t.town_to = 'London'
 ```
+
 </details>
 
 <details>
@@ -292,6 +314,7 @@ WHERE p.name = 'Steve Martin'
 Вывести отсортированный по количеству перелетов (по убыванию) и имени (по возрастанию) список пассажиров, совершивших хотя бы 1 полет.
 
 **Решение:**
+
 ```sql
 SELECT p.name as name,
 	COUNT(p.id) as count
@@ -301,6 +324,7 @@ GROUP BY p.id
 HAVING COUNT(p.id) > 0
 ORDER BY count DESC, name ASC
 ```
+
 </details>
 
 <details>
@@ -310,6 +334,7 @@ ORDER BY count DESC, name ASC
 Определить, сколько потратил в 2005 году каждый из членов семьи. В результирующей выборке не выводите тех членов семьи, которые ничего не потратили.
 
 **Решение:**
+
 ```sql
 SELECT fm.member_name,
 	fm.status,
@@ -322,6 +347,7 @@ FROM FamilyMembers fm
 	) = 2005
 GROUP BY fm.member_id
 ```
+
 </details>
 
 <details>
@@ -331,11 +357,13 @@ GROUP BY fm.member_id
 Выведите имя самого старшего человека. Если таких несколько, то выведите их всех.
 
 **Решение:**
+
 ```sql
 SELECT member_name
 FROM FamilyMembers
 WHERE birthday = (SELECT MIN(birthday) FROM FamilyMembers);
 ```
+
 ```sql
 SELECT fm.member_name
 FROM FamilyMembers fm
@@ -344,6 +372,7 @@ JOIN (
     FROM FamilyMembers
 ) fm2 ON fm.birthday = fm2.min_birthday;
 ```
+
 </details>
 
 <details>
@@ -351,6 +380,7 @@ JOIN (
 
 **Описание задачи:**
 Определить, кто из членов семьи покупал картошку (potato)
+
 **Решение:**
 ```sql
 SELECT DISTINCT
@@ -359,6 +389,7 @@ FROM FamilyMembers fm
 JOIN Payments p ON p.family_member = fm.member_id
 JOIN Goods g ON g.good_id = p.good and g.good_name = 'potato'
 ```
+
 </details>
 
 <details>
@@ -366,6 +397,7 @@ JOIN Goods g ON g.good_id = p.good and g.good_name = 'potato'
 
 **Описание задачи:**
 Сколько и кто из семьи потратил на развлечения (entertainment). Вывести статус в семье, имя, сумму
+
 **Решение:**
 ```sql
 SELECT
@@ -378,8 +410,8 @@ JOIN Goods g ON g.good_id = p.good
 JOIN GoodTypes gt ON gt.good_type_id = g.type AND gt.good_type_name = 'entertainment'
 GROUP BY fm.member_id
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 21 - Товары, купленные более одного раза</summary>
@@ -413,7 +445,6 @@ WHERE fm.status = 'mother'
 
 <details>
 <summary>Задание 23 - Самый дорогой деликатес</summary>
-
 **Описание задачи:**
 Найдите самый дорогой деликатес (delicacies) и выведите его цену
 
@@ -428,7 +459,6 @@ WHERE gt.good_type_name = 'delicacies'
 ORDER BY p.unit_price DESC
 LIMIT 1;
 ```
-
 ```sql
 SELECT g.good_name,
 	p.unit_price
@@ -445,12 +475,12 @@ FROM Goods g
 ```
 </details>
 
-
 <details>
 <summary>Задание 24 - Кто и сколько потратил в июне 2005 года</summary>
 
 **Описание задачи:**
 Определить кто и сколько потратил в июне 2005
+
 **Решение:**
 ```sql
 SELECT fm.member_name,
@@ -468,6 +498,7 @@ GROUP BY fm.member_name
 
 **Описание задачи:**
 Определить, какие товары не покупались в 2005 году
+
 **Решение:**
 ```sql
 SELECT
@@ -481,6 +512,7 @@ WHERE NOT EXISTS(
       AND EXTRACT(YEAR FROM p.date) = 2005
 )
 ```
+
 ```sql
 SELECT DISTINCT g.good_name
 FROM Goods g
@@ -488,6 +520,7 @@ FROM Goods g
     AND EXTRACT(YEAR FROM p.date) = 2005
 WHERE p.payment_id IS NULL;
 ```
+
 </details>
 
 <details>
@@ -496,6 +529,7 @@ WHERE p.payment_id IS NULL;
 **Описание задачи:**
 Определить группы товаров, которые не приобретались в 2005 году
 **Решение:**
+
 ```sql
 SELECT gt.good_type_name
 FROM GoodTypes gt
@@ -507,6 +541,7 @@ WHERE NOT EXISTS (
       AND p.date BETWEEN '2005-01-01' AND '2005-12-31'
 )
 ```
+
 ```sql
 SELECT gt.good_type_name
 FROM GoodTypes gt
@@ -517,6 +552,7 @@ WHERE gt.good_type_id NOT IN (
 			and p.date BETWEEN '2005-01-01' and '2005-12-31'
 	)
 ```
+
 </details>
 
 <details>
@@ -525,6 +561,7 @@ WHERE gt.good_type_id NOT IN (
 **Описание задачи:**
 Узнайте, сколько было потрачено на каждую из групп товаров в 2005 году. Выведите название группы и потраченную на неё сумму. Если потраченная сумма равна нулю, т.е. товары из этой группы не покупались в 2005 году, то не выводите её.
 **Решение:**
+
 ```sql
 SELECT gt.good_type_name,
        SUM(p.amount * p.unit_price) costs
@@ -537,6 +574,7 @@ FROM GoodTypes gt
         ) = 2005
 GROUP BY gt.good_type_id
 ```
+
 </details>
 
 <details>
@@ -556,9 +594,8 @@ FROM Trip t
 WHERE t.town_from = 'Rostov'
 	and t.town_to = 'Moscow'
 ```
+
 </details>
-
-
 
 <details>
 <summary>Задание 29 - Имена пассажиров, летящих в Москву</summary>
@@ -582,6 +619,7 @@ JOIN Trip t ON t.id = pt.trip AND t.plane = 'TU-134' and t.town_to='Moscow'
 **Описание задачи:**
 Выведите нагруженность (число пассажиров) каждого рейса (trip). Результат вывести в отсортированном виде по убыванию нагруженности.
 **Решение:**
+
 ```sql
 SELECT pt.trip trip,
        COUNT(pt.passenger) count
@@ -589,6 +627,7 @@ FROM Pass_in_trip pt
 GROUP BY pt.trip
 ORDER BY COUNT(pt.passenger) DESC
 ```
+
 </details>
 
 <details>
@@ -597,11 +636,13 @@ ORDER BY COUNT(pt.passenger) DESC
 **Описание задачи:**
 Вывести всех членов семьи с фамилией Quincey.
 **Решение:**
+
 ```sql
 SELECT *
 FROM FamilyMembers fm
 WHERE fm.member_name LIKE '%Quincey%'
 ```
+
 </details>
 
 <details>
@@ -610,10 +651,12 @@ WHERE fm.member_name LIKE '%Quincey%'
 **Описание задачи:**
 Вывести средний возраст людей (в годах), хранящихся в базе данных. Результат округлите до целого в меньшую сторону.
 **Решение:**
+
 ```sql
 SELECT FLOOR(AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, birthday)))) AS age
 FROM FamilyMembers;
 ```
+
 </details>
 
 <details>
@@ -624,6 +667,7 @@ FROM FamilyMembers;
 В базе данных хранятся данные о покупках красной (red caviar) и черной икры (black caviar).
 В ответе должна быть одна строка со средней ценой всей купленной когда-либо икры.
 **Решение:**
+
 ```sql
 SELECT
     AVG(p.unit_price) as cost
@@ -631,6 +675,7 @@ FROM Payments p
 JOIN Goods g ON g.good_id = p.good AND g.good_name LIKE '%caviar%'
 
 ```
+
 </details>
 
 <details>
@@ -639,6 +684,7 @@ JOIN Goods g ON g.good_id = p.good AND g.good_name LIKE '%caviar%'
 **Описание задачи:**
 Сколько всего 10-ых классов
 **Решение:**
+
 ```sql
 SELECT
     COUNT(c.id)
@@ -646,6 +692,7 @@ FROM Class c
 WHERE c.name LIKE '10%'
 
 ```
+
 </details>
 
 <details>
@@ -654,6 +701,7 @@ WHERE c.name LIKE '10%'
 **Описание задачи:**
 Сколько различных кабинетов школы использовались 2 сентября 2019 года для проведения занятий?
 **Решение:**
+
 ```sql
 SELECT
     COUNT(DISTINCT s.classroom)
@@ -661,6 +709,7 @@ FROM Schedule s
 WHERE s.date = '2019-09-02'
 
 ```
+
 </details>
 
 <details>
@@ -669,12 +718,14 @@ WHERE s.date = '2019-09-02'
 **Описание задачи:**
 Выведите информацию об обучающихся живущих на улице Пушкина (ul. Pushkina)?
 **Решение:**
+
 ```sql
 SELECT
     *
 FROM Student s
 WHERE s.address like '%ul. Pushkina%'
 ```
+
 </details>
 
 <details>
@@ -683,11 +734,13 @@ WHERE s.address like '%ul. Pushkina%'
 **Описание задачи:**
 Сколько лет самому молодому обучающемуся ?
 **Решение:**
+
 ```sql
 SELECT
     MIN(EXTRACT(YEAR FROM AGE(CURRENT_DATE, s.birthday))) AS year
 FROM Student s;
 ```
+
 </details>
 
 <details>
@@ -696,12 +749,14 @@ FROM Student s;
 **Описание задачи:**
 Сколько учениц с именем Анна (Anna) учится в школе?
 **Решение:**
+
 ```sql
 SELECT
     COUNT(s.id)
 FROM Student s
 WHERE s.first_name LIKE '%Anna%'
 ```
+
 </details>
 
 <details>
@@ -710,6 +765,7 @@ WHERE s.first_name LIKE '%Anna%'
 **Описание задачи:**
 Сколько обучающихся в 10 B классе ?
 **Решение:**
+
 ```sql
 SELECT
     COUNT(s.id) count
@@ -719,6 +775,7 @@ FROM
     JOIN Class c on c.id = sic.class
     and c.name LIKE '%10 B%'
 ```
+
 </details>
 
 <details>
@@ -728,6 +785,7 @@ FROM
 Выведите название предметов, которые преподает Ромашкин П.П. (Romashkin P.P.).
 Обратите внимание, что в базе данных есть несколько учителей с такой фамилией.
 **Решение:**
+
 ```sql
 SELECT
     sub.name subjects
@@ -736,6 +794,7 @@ FROM Subject sub
          JOIN Teacher t on t.id = sch.teacher
 WHERE t.last_name LIKE '%Romashkin%' and t.first_name LIKE 'P%' and t.middle_name LIKE 'P%'
 ```
+
 </details>
 
 <details>
@@ -746,6 +805,7 @@ WHERE t.last_name LIKE '%Romashkin%' and t.first_name LIKE 'P%' and t.middle_nam
 Поля в результирующей таблице: start_pair
 
 **Решение:**
+
 ```sql
 SELECT t.start_pair
 FROM Timepair t
@@ -762,6 +822,7 @@ WHERE EXISTS (
 )
 ORDER BY t.start_pair;
 ```
+
 </details>
 
 <details>
@@ -772,6 +833,7 @@ ORDER BY t.start_pair;
 Используйте конструкцию "as time" для указания разницы во времени. Это необходимо для корректной проверки.
 Результат должен быть в формате HH:MM:SS
 **Решение:**
+
 ```sql
 SELECT
   max(end_pair) - min(start_pair) time
@@ -788,8 +850,8 @@ FROM
   )
 
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 43 - Преподаватели физкультуры</summary>
@@ -799,6 +861,7 @@ FROM
 Поля в результирующей таблице:
 last_name
 **Решение:**
+
 ```sql
 select t.last_name
 from Teacher t
@@ -811,9 +874,8 @@ where exists(
 )
 order by t.last_name
 ```
+
 </details>
-
-
 
 <details>
 <summary>Задание 44 - Максимальный возраст в 10 классах</summary>
@@ -824,6 +886,7 @@ order by t.last_name
 Поля в результирующей таблице:
 max_year
 **Решение:**
+
 ```sql
 SELECT EXTRACT(
 		YEAR
@@ -851,6 +914,7 @@ FROM Student s
 ORDER BY s.birthday
 LIMIT 1
 ```
+
 </details>
 
 <details>
@@ -862,6 +926,7 @@ LIMIT 1
 Поля в результирующей таблице:
 classroom
 **Решение:**
+
 ```sql
 WITH classroom_counts AS (
     SELECT
@@ -876,6 +941,7 @@ FROM classroom_counts
 WHERE usage_count = (SELECT MAX(usage_count) FROM classroom_counts)
 ORDER BY classroom;
 ```
+
 </details>
 
 <details>
@@ -886,6 +952,7 @@ ORDER BY classroom;
 Поля в результирующей таблице:
 name
 **Решение:**
+
 ```sql
 SELECT DISTINCT
     c.name
@@ -893,8 +960,8 @@ FROM Schedule s
 JOIN Class c ON c.id = s.class
 JOIN Teacher t ON s.teacher = t.id and t.last_name = 'Krauze'
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Задание 48 - Заполненность классов</summary>
@@ -903,6 +970,7 @@ JOIN Teacher t ON s.teacher = t.id and t.last_name = 'Krauze'
 Выведите заполненность классов в порядке убывания
 Используйте конструкцию "as count" для агрегатной функции подсчета числа учащихся в классах. Это необходимо для корректной проверки.
 **Решение:**
+
 ```sql
 select
     c.name,
@@ -914,7 +982,6 @@ order by count desc
 ```
 
 </details>
-
 
 <details>
 <summary>Задача 49 - Процент обучающихся в 10 A классе</summary>
@@ -972,6 +1039,7 @@ FROM
   class_counts;
 
 ```
+
 </details>
 
 <details>
@@ -983,6 +1051,7 @@ FROM
 Поля в результирующей таблице:
 percent
 **Решение:**
+
 ```sql
 SELECT
     FLOOR(target_count * 100.0 / total_count) AS percent
@@ -993,4 +1062,5 @@ FROM (
     FROM Student
 ) AS counts;
 ```
+
 </details>
