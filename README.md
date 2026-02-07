@@ -1039,3 +1039,83 @@ FROM (
 ) AS counts;
 ```
 </details>
+
+<details>
+<summary>Задание 51 - Добавить товар "Cheese"</summary>
+
+**Описание задачи:**
+Добавьте товар с именем "Cheese" и типом "food" в список товаров (Goods).
+В качестве первичного ключа (good_id) укажите количество записей в таблице + 1.
+**Решение:**
+```sql
+INSERT INTO Goods (good_id, good_name, type)
+SELECT 
+    (SELECT COUNT(*) FROM Goods) + 1,
+    'Cheese',
+    (SELECT good_type_id FROM GoodTypes gt WHERE gt.good_type_name='food');
+```
+</details>
+
+<details>
+<summary>Задание 59 - Пользователи с белорусским номером</summary>
+**Описание задачи:**
+Добавьте товар с именем "Cheese" и типом "food" в список товаров (Goods).
+В качестве первичного ключа (good_id) укажите количество записей в таблице + 1.
+**Решение:**
+```sql
+SELECT *
+FROM Users u
+WHERE u.phone_number LIKE '%+375%'
+```
+</details>
+
+
+<details>
+<summary>Задание 61 - Преподаватели в 11-ых классах</summary>
+
+**Описание задачи:**
+Выведите идентификаторы преподавателей, которые хотя бы один раз за всё время преподавали в каждом из одиннадцатых классов.
+Поля в результирующей таблице:
+teacher
+**Решение:**
+```sql
+SELECT 
+  teacher 
+FROM 
+  (
+    SELECT 
+      s.teacher, 
+      COUNT(DISTINCT cls.name) 
+    FROM 
+      Schedule s 
+      JOIN Class cls ON cls.id = s.class 
+      AND cls.name LIKE '%11%' 
+    GROUP BY s.teacher 
+    HAVING 
+      COUNT(DISTINCT cls.name) >= (
+        SELECT 
+          COUNT(*) 
+        FROM 
+          Class c 
+        WHERE 
+          c.name LIKE '%11%'
+      )
+  )
+```
+</details>
+
+<details>
+<summary>Задание 61 - Комнаты, зарезервированные на 12-й неделе 2020 года</summary>
+
+**Описание задачи:**
+Выведите список комнат, которые были зарезервированы хотя бы на одни сутки в 12-ую неделю 2020 года. В данной задаче в качестве одной недели примите период из семи дней, первый из которых начинается 1 января 2020 года. Например, первая неделя года — 1–7 января, а третья — 15–21 января.
+**Решение:**
+```sql
+SELECT * FROM Rooms
+WHERE id IN (
+SELECT room_id FROM Reservations r
+WHERE extract(year from r.start_date) = 2020 
+AND extract(week from r.start_date) = 12
+);
+```
+</details>
